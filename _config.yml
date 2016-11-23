@@ -4,3 +4,6 @@ tileApi: https://api-maps-staging.tilestream.net
 source: docs
 permalink: /
 baseurl: /mapbox-gl-style-spec
+# TODO: Replace https://www.mapbox.com/base/latest/base.css
+# (includes icon font)
+# baseApi: /mapbox-gl-style-spec/base.css
