@@ -9,3 +9,4 @@ lalrpop = "*"
 
 [dependencies]
 lalrpop-util = "*"
+toml = "*"

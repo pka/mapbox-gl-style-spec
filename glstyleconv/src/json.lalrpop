@@ -1,64 +1,77 @@
+use std::str::FromStr;
+use toml;
+
 grammar;
 
 // https://github.com/antlr/grammars-v4/blob/master/json/JSON.g4
 // Taken from "The Definitive ANTLR 4 Reference" by Terence Parr
 // Derived from http://json.org
 
-pub json = value;
+pub json: toml::Value = value;
 
-object: () = {
-    "{" pair ("," pair)* "}",
-    "{" "}",
+object: toml::Table = {
+    "{" <p0:pair> <pairs:("," pair)*> "}" => {
+        let mut map = toml::Table::new();
+        map.insert(p0.0, p0.1);
+        for (_, pair) in pairs {
+            map.insert(pair.0, pair.1);
+        }
+        map
+    },
+    "{" "}" => toml::Table::new()
 };
 
-pair: () = {
-    STRING ":" value
+pair: (String, toml::Value) = {
+    <k:STRING> ":" <v:value> => (String::from(k), v)
 };
 
-array: () = {
-    "[" value ("," value)* "]",
-    "[" "]",
+array: toml::Array = {
+    "[" <v0:value> <values:("," value)*> "]" => {
+        let mut arr = Vec::with_capacity(values.len()+1);
+        arr.push(v0);
+        for (_, val) in values {
+            arr.push(val);
+        }
+        arr
+    },
+    "[" "]" => Vec::new()
 };
 
-value: () = {
-    STRING,
+pub value: toml::Value = {
+    STRING => toml::Value::String(<>),
     NUMBER,
-    object,
-    array,
-    "true",
-    "false",
-    "null",
+    object => toml::Value::Table(<>),
+    array => toml::Value::Array(<>),
+    "true" => toml::Value::Boolean(true),
+    "false" => toml::Value::Boolean(false),
+    "null" => toml::Value::String(String::from("")),
 };
 
 
-STRING: () = {
-    r#""([^"\\]|\\["\\/bfnrt]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])*""#
+STRING: String = {
+    r#""([^"\\]|\\["\\/bfnrt]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])*""# => String::from(&<>[1 .. <>.len()-1])
 };
 
-//ESC: () = {
-//    r#"\\["\\/bfnrt]"#
-//};
-
-
-//UNICODE: () = {
-//    r"\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]"
-//};
-
-
-NUMBER: () = {
-    "-"? INT r"\.[0-9]+" EXP?,
-    "-"? INT EXP,
-    "-"? INT
+NUMBER: toml::Value = {
+    <m:"-"?> <i:INT> <n:r"\.[0-9]+"> <e:EXP?> => {
+        let sign = m.unwrap_or("+");
+        let exp = e.unwrap_or(String::new());
+        let f = f64::from_str(&format!("{}{}{}{}", sign, i, n, &exp)).unwrap();
+        toml::Value::Float(f)
+    },
+    <i:INT> <e:EXP> => toml::Value::Float(f64::from_str(&format!("{}{}", i, &e)).unwrap()),
+    "-" <i:INT> <e:EXP> => toml::Value::Float(f64::from_str(&format!("-{}{}", i, &e)).unwrap()),
+    INT => toml::Value::Integer(i64::from_str(<>).unwrap()),
+    "-" <num: INT> => toml::Value::Integer(-i64::from_str(num).unwrap()),
 };
 
-
-INT: () = {
+INT: &'input str = {
     "0",
-    r"[1-9][0-9]*"
+    r"[1-9][0-9]*",
 };
 
 // no leading zeros
 
-EXP: () = {
-    r"[Ee][+-]?" INT
+EXP: String = {
+    r"[Ee][+-]?" INT => { format!("{}{}", <>) }
 };
