@@ -1,0 +1,64 @@
+grammar;
+
+// https://github.com/antlr/grammars-v4/blob/master/json/JSON.g4
+// Taken from "The Definitive ANTLR 4 Reference" by Terence Parr
+// Derived from http://json.org
+
+pub json = value;
+
+object: () = {
+    "{" pair ("," pair)* "}",
+    "{" "}",
+};
+
+pair: () = {
+    STRING ":" value
+};
+
+array: () = {
+    "[" value ("," value)* "]",
+    "[" "]",
+};
+
+value: () = {
+    STRING,
+    NUMBER,
+    object,
+    array,
+    "true",
+    "false",
+    "null",
+};
+
+
+STRING: () = {
+    r#""([^"\\]|\\["\\/bfnrt]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])*""#
+};
+
+//ESC: () = {
+//    r#"\\["\\/bfnrt]"#
+//};
+
+
+//UNICODE: () = {
+//    r"\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]"
+//};
+
+
+NUMBER: () = {
+    "-"? INT r"\.[0-9]+" EXP?,
+    "-"? INT EXP,
+    "-"? INT
+};
+
+
+INT: () = {
+    "0",
+    r"[1-9][0-9]*"
+};
+
+// no leading zeros
+
+EXP: () = {
+    r"[Ee][+-]?" INT
+};
