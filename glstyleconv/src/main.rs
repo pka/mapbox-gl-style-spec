@@ -47,17 +47,7 @@ fn value_to_toml() {
 }
 
 #[test]
-fn mbstudio_to_toml() {
-    let json = r#"{"circle-radius": {"stops": [-1, 3.5, 2e10]}}"#;
-    assert_eq!(format!("{:?}", json::parse_json(json)),
-        r#"Ok(Table({"circle-radius": Table({"stops": Array([Integer(-1), Float(3.5), Float(20000000000)])})}))"#
-    );
-
-    let toml = r#"[circle-radius]
-stops = [-1, 3.5, 20000000000.0]
-"#;
-    assert_eq!(format!("{}", json::parse_json(json).unwrap()), toml);
-
+fn json_to_toml() {
     let json = r#"[1,2,3]"#;
     let toml = "json = [1, 2, 3]\n";
     println!("{}", json::parse_json(json).unwrap());
@@ -111,23 +101,56 @@ fill-color = "#00ffff"
     assert_eq!(format!("{}", json::parse_json(json).unwrap()), toml);
     assert!(toml::Parser::new(toml).parse().is_some());
 
+    let json = r#"{"circle-radius": {"stops": [[5, 1],[10, 2]]}}"#;
+    let toml = r#"[circle-radius]
+[[circle-radius.stops]]
+in = 5
+out = 1
+
+[[circle-radius.stops]]
+in = 10
+out = 2
+"#;
+    let tomlshort = r#"[circle-radius]
+    stops = [{in = 5, out = 1}, {in = 10, out = 2}]
+"#;
+
+    let tomlparsed = json::parse_json(json).unwrap();
+    println!("{}", tomlparsed);
+    assert_eq!(format!("{}", tomlparsed), toml);
+    assert_eq!(tomlparsed, toml::Value::Table(toml::Parser::new(tomlshort).parse().unwrap()));
+
     let json = r#"{"circle-radius": {"property": "temperature","stops": [[{"zoom": 0, "value": 0}, 0],[{"zoom": 20, "value": 5}, 20]]}}"#;
     let toml = r#"[circle-radius]
 property = "temperature"
-stops = [[value = 0
+
+[[circle-radius.stops]]
+out = 0
+
+[circle-radius.stops.in]
+value = 0
 zoom = 0
-, 0], [value = 5
+
+[[circle-radius.stops]]
+out = 20
+
+[circle-radius.stops.in]
+value = 5
 zoom = 20
-, 20]]
 "#;
-    println!("{}", json::parse_json(json).unwrap());
-    assert_eq!(format!("{}", json::parse_json(json).unwrap()), toml);
-    // Resulting TOML is invalid:
-    assert_eq!(toml::Parser::new(toml).parse(), None);
+    let tomlshort = r#"[circle-radius]
+    property = "temperature"
+    stops = [{in = {value = 0, zoom = 0}, out = 0}, {in = {value = 5, zoom = 20}, out = 20}]
+"#;
+    let tomlparsed = json::parse_json(json).unwrap();
+    println!("{}", tomlparsed);
+    assert_eq!(format!("{}", tomlparsed), toml);
+    assert!(toml::Parser::new(toml).parse().is_some());
+    assert_eq!(tomlparsed, toml::Value::Table(toml::Parser::new(tomlshort).parse().unwrap()));
 }
 
 #[test]
-fn file_to_toml() {
+fn mstudio_to_toml() {
     let toml = json_file_to_toml("testdata/bright-v9-cdn.json");
     println!("{}", toml);
     assert!(toml.contains(r##"[[layers]]
@@ -175,17 +198,15 @@ text-field = "{name_en}"
 text-font = ["Open Sans Bold"]
 text-max-width = 6.25
 text-transform = "uppercase"
+"##));
 
-[layers.layout.text-size]
-stops = [[1, 11], [4, 17]]
-
-[layers.metadata]
-"mapbox:group" = "1444849242106.713"
-
+assert!(toml.contains(r##"
 [layers.paint]
 text-color = "#334"
 text-halo-blur = 1
 text-halo-color = "rgba(255,255,255,0.8)"
 text-halo-width = 2
 "##));
+
+    assert!(toml.contains(r#"filter = [["all"], ["!=", "class", "river"], ["!=", "class", "stream"], ["!=", "class", "canal"]]"#));
 }

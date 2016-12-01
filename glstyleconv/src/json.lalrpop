@@ -34,7 +34,35 @@ object: toml::Table = {
 };
 
 pair: (String, toml::Value) = {
-    <k:STRING> ":" <v:value> => (String::from(k), v)
+    <k:STRING> ":" <v:value> => {
+        // convert mixed "stops" array to table
+        let mut is_stops = false;
+        if k == "stops" {
+            if let toml::Value::Array(ref arr) = v {
+                is_stops = arr.iter().all(|el|
+                    match el { &toml::Value::Array(ref stoparr) => stoparr.len() == 2, _ => false }
+                );
+            }
+        }
+
+        let mut kvpair = (String::from(k), v.clone());
+
+        if is_stops {
+            if let toml::Value::Array(ref stops) = v {
+                let stoptables = stops.iter().map(|stoparr| {
+                    let mut table = toml::Table::new();
+                    if let &toml::Value::Array(ref stop) = stoparr {
+                        table.insert("in".to_string(), stop[0].clone());
+                        table.insert("out".to_string(), stop[1].clone());
+                    }
+                    toml::Value::Table(table)
+                }).collect();
+                kvpair.1 = toml::Value::Array(stoptables);
+            }
+        }
+
+        kvpair
+    }
 };
 
 array: toml::Array = {
@@ -44,6 +72,22 @@ array: toml::Array = {
         for (_, val) in values {
             arr.push(val);
         }
+
+        // Fix element type of combining filters
+        let mut is_filter = false;
+        if arr.len() > 1 {
+            if let toml::Value::String(ref s) = arr[0] {
+                if vec!["all", "any", "none"].iter().any(|keyword| s == keyword) {
+                    is_filter = arr[1..arr.len()-1].iter().all(|el|
+                        match el { &toml::Value::Array(_) => true, _ => false }
+                    );
+                }
+            }
+        }
+        if is_filter {
+            arr[0] = toml::Value::Array(vec![arr[0].clone()]);
+        }
+
         arr
     },
     "[" "]" => Vec::new()
