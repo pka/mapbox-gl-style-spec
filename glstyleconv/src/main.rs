@@ -2,6 +2,29 @@ extern crate lalrpop_util;
 extern crate toml;
 
 pub mod json;
+use std::io::prelude::*;
+use std::fs::File;
+use std::env;
+
+
+fn json_file_to_toml(fname: &str) -> String {
+    let mut file = File::open(fname).unwrap();
+    let mut json = String::new();
+    let _ = file.read_to_string(&mut json);
+    format!("{}", json::parse_json(&json).unwrap())
+}
+
+fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 2 {
+println!("usage:
+glstyleconv <jsonfilename>");
+    } else {
+        println!("{}", json_file_to_toml(&args[1]));
+    }
+}
+
 
 #[test]
 fn json() {
@@ -24,7 +47,7 @@ fn value_to_toml() {
 }
 
 #[test]
-fn json_to_toml() {
+fn mbstudio_to_toml() {
     let json = r#"{"circle-radius": {"stops": [-1, 3.5, 2e10]}}"#;
     assert_eq!(format!("{:?}", json::parse_json(json)),
         r#"Ok(Table({"circle-radius": Table({"stops": Array([Integer(-1), Float(3.5), Float(20000000000)])})}))"#
@@ -104,14 +127,8 @@ zoom = 20
 }
 
 #[test]
-fn json_file_to_toml() {
-    use std::io::prelude::*;
-    use std::fs::File;
-
-    let mut file = File::open("testdata/bright-v9-cdn.json").unwrap();
-    let mut json = String::new();
-    let _ = file.read_to_string(&mut json);
-    let toml = format!("{}", json::parse_json(&json).unwrap());
+fn file_to_toml() {
+    let toml = json_file_to_toml("testdata/bright-v9-cdn.json");
     println!("{}", toml);
     assert!(toml.contains(r##"[[layers]]
 id = "background"
@@ -171,9 +188,4 @@ text-halo-blur = 1
 text-halo-color = "rgba(255,255,255,0.8)"
 text-halo-width = 2
 "##));
-}
-
-
-fn main() {
-    println!("Hello, world!");
 }
