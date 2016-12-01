@@ -7,7 +7,19 @@ grammar;
 // Taken from "The Definitive ANTLR 4 Reference" by Terence Parr
 // Derived from http://json.org
 
-pub json: toml::Value = value;
+pub json: toml::Value = {
+    <v:value> => {
+        match v {
+            // embed top-level array in table
+            toml::Value::Array(_) => {
+                let mut map = toml::Table::new();
+                map.insert("json".to_string(), v);
+                toml::Value::Table(map)
+            },
+            _ => v
+        }
+    }
+};
 
 object: toml::Table = {
     "{" <p0:pair> <pairs:("," pair)*> "}" => {
