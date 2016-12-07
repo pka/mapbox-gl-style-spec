@@ -2,26 +2,33 @@ extern crate lalrpop_util;
 extern crate toml;
 
 pub mod json;
-use std::io::prelude::*;
+
+use std::io;
 use std::fs::File;
 use std::env;
 
 
+fn read_to_toml(input: &mut io::Read) -> String {
+    let mut json = String::new();
+    let _ = input.read_to_string(&mut json);
+    format!("{}", json::parse_json(&json).unwrap())
+}
+
 fn json_file_to_toml(fname: &str) -> String {
     let mut file = File::open(fname).unwrap();
-    let mut json = String::new();
-    let _ = file.read_to_string(&mut json);
-    format!("{}", json::parse_json(&json).unwrap())
+    read_to_toml(&mut file)
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() != 2 {
-println!("usage:
-glstyleconv <jsonfilename>");
-    } else {
-        println!("{}", json_file_to_toml(&args[1]));
+    match args.len() {
+        1 => println!("{}", read_to_toml(&mut io::stdin())),
+        2 => println!("{}", json_file_to_toml(&args[1])),
+        _ => {
+            println!("usage:
+glstyleconv [jsonfilename]");
+        }
     }
 }
 
