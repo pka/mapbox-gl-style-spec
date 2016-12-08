@@ -8,24 +8,32 @@ module Jekyll
       @highlighttoml = Liquid::Template.parse("{% highlight0 toml %}{{toml}}{% endhighlight0 %}")
       @highlightjson = Liquid::Template.parse("{% highlight0 json %}{{json}}{% endhighlight0 %}")
       super(tag_name, markup, tokens)
-      @lang = 'toml' if @lang == 'json'
     end
 
     def render(context)
-      if @lang == 'toml'
+      if @lang == 'json'
         json = render_all(@nodelist, context)
-        jsonpatched = if json =~ /^\b*{/ then json else "{#{json}}" end
+
+        jsonpatched = if json =~ /^\b*{/
+            json.clone
+        elsif json =~ /^\b*\[/
+            "{\"filter\": #{json}}"
+        else
+            "{#{json}}"
+        end
+        jsonpatched.gsub!('...', '')
+
         stdin, stdout, stderr = Open3.popen3('cd glstyleconv && cargo run -q')
         stdin.puts(jsonpatched)
         stdin.close
-        toml = (stdout.read || "")
+        toml = stdout.read
+        toml << stderr.read
 
         @highlighttoml.registers.merge!(context.registers)
         out = @highlighttoml.render('toml' => toml)
 
         # Debugging output
         @highlightjson.registers.merge!(context.registers)
-        json << (stderr.read || "")
         out += @highlightjson.render('json' => json)
 
         out
