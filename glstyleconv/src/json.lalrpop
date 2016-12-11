@@ -1,5 +1,5 @@
 use std::str::FromStr;
-use toml;
+use ast;
 
 grammar;
 
@@ -7,40 +7,40 @@ grammar;
 // Taken from "The Definitive ANTLR 4 Reference" by Terence Parr
 // Derived from http://json.org
 
-pub json: toml::Value = {
+pub json: ast::Value = {
     <v:value> => {
         match v {
             // embed top-level array in table
-            toml::Value::Array(_) => {
-                let mut map = toml::Table::new();
-                map.insert("json".to_string(), v);
-                toml::Value::Table(map)
+            ast::Value::Array(_) => {
+                let mut map = ast::Table::new();
+                map.push(("json".to_string(), v));
+                ast::Value::Table(map)
             },
             _ => v
         }
     }
 };
 
-object: toml::Table = {
-    "{" <p0:pair> <pairs:("," pair)*> "}" => {
-        let mut map = toml::Table::new();
-        map.insert(p0.0, p0.1);
-        for (_, pair) in pairs {
-            map.insert(pair.0, pair.1);
+object: ast::Table = {
+    "{" <p0:pair> <pairs:("," <pair>)*> "}" => {
+        let mut map = ast::Table::new();
+        map.push(p0);
+        for pair in pairs {
+            map.push(pair);
         }
         map
     },
-    "{" "}" => toml::Table::new()
+    "{" "}" => ast::Table::new()
 };
 
-pair: (String, toml::Value) = {
+pair: (String, ast::Value) = {
     <k:STRING> ":" <v:value> => {
         // convert mixed "stops" array to table
         let mut is_stops = false;
         if k == "stops" {
-            if let toml::Value::Array(ref arr) = v {
+            if let ast::Value::Array(ref arr) = v {
                 is_stops = arr.iter().all(|el|
-                    match el { &toml::Value::Array(ref stoparr) => stoparr.len() == 2, _ => false }
+                    match el { &ast::Value::Array(ref stoparr) => stoparr.len() == 2, _ => false }
                 );
             }
         }
@@ -48,16 +48,16 @@ pair: (String, toml::Value) = {
         let mut kvpair = (String::from(k), v.clone());
 
         if is_stops {
-            if let toml::Value::Array(ref stops) = v {
+            if let ast::Value::Array(ref stops) = v {
                 let stoptables = stops.iter().map(|stoparr| {
-                    let mut table = toml::Table::new();
-                    if let &toml::Value::Array(ref stop) = stoparr {
-                        table.insert("in".to_string(), stop[0].clone());
-                        table.insert("out".to_string(), stop[1].clone());
+                    let mut table = ast::Table::new();
+                    if let &ast::Value::Array(ref stop) = stoparr {
+                        table.push(("in".to_string(), stop[0].clone()));
+                        table.push(("out".to_string(), stop[1].clone()));
                     }
-                    toml::Value::Table(table)
+                    ast::Value::Table(table)
                 }).collect();
-                kvpair.1 = toml::Value::Array(stoptables);
+                kvpair.1 = ast::Value::Array(stoptables);
             }
         }
 
@@ -65,7 +65,7 @@ pair: (String, toml::Value) = {
     }
 };
 
-array: toml::Array = {
+array: ast::Array = {
     "[" <v0:value> <values:("," value)*> "]" => {
         let mut arr = Vec::with_capacity(values.len()+1);
         arr.push(v0);
@@ -76,16 +76,16 @@ array: toml::Array = {
         // Fix element type of combining filters
         let mut is_filter = false;
         if arr.len() > 1 {
-            if let toml::Value::String(ref s) = arr[0] {
+            if let ast::Value::String(ref s) = arr[0] {
                 if vec!["all", "any", "none"].iter().any(|keyword| s == keyword) {
                     is_filter = arr[1..arr.len()-1].iter().all(|el|
-                        match el { &toml::Value::Array(_) => true, _ => false }
+                        match el { &ast::Value::Array(_) => true, _ => false }
                     );
                 }
             }
         }
         if is_filter {
-            arr[0] = toml::Value::Array(vec![arr[0].clone()]);
+            arr[0] = ast::Value::Array(vec![arr[0].clone()]);
         }
 
         arr
@@ -93,14 +93,14 @@ array: toml::Array = {
     "[" "]" => Vec::new()
 };
 
-pub value: toml::Value = {
-    STRING => toml::Value::String(<>),
+pub value: ast::Value = {
+    STRING => ast::Value::String(<>),
     NUMBER,
-    object => toml::Value::Table(<>),
-    array => toml::Value::Array(<>),
-    "true" => toml::Value::Boolean(true),
-    "false" => toml::Value::Boolean(false),
-    "null" => toml::Value::String(String::from("")),
+    object => ast::Value::Table(<>),
+    array => ast::Value::Array(<>),
+    "true" => ast::Value::Boolean(true),
+    "false" => ast::Value::Boolean(false),
+    "null" => ast::Value::String(String::from("")),
 };
 
 
@@ -108,17 +108,17 @@ STRING: String = {
     r#""([^"\\]|\\["\\/bfnrt]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])*""# => String::from(&<>[1 .. <>.len()-1])
 };
 
-NUMBER: toml::Value = {
+NUMBER: ast::Value = {
     <m:"-"?> <i:INT> <n:r"\.[0-9]+"> <e:EXP?> => {
         let sign = m.unwrap_or("+");
         let exp = e.unwrap_or(String::new());
         let f = f64::from_str(&format!("{}{}{}{}", sign, i, n, &exp)).unwrap();
-        toml::Value::Float(f)
+        ast::Value::Float(f)
     },
-    <i:INT> <e:EXP> => toml::Value::Float(f64::from_str(&format!("{}{}", i, &e)).unwrap()),
-    "-" <i:INT> <e:EXP> => toml::Value::Float(f64::from_str(&format!("-{}{}", i, &e)).unwrap()),
-    INT => toml::Value::Integer(i64::from_str(<>).unwrap()),
-    "-" <num: INT> => toml::Value::Integer(-i64::from_str(num).unwrap()),
+    <i:INT> <e:EXP> => ast::Value::Float(f64::from_str(&format!("{}{}", i, &e)).unwrap()),
+    "-" <i:INT> <e:EXP> => ast::Value::Float(f64::from_str(&format!("-{}{}", i, &e)).unwrap()),
+    INT => ast::Value::Integer(i64::from_str(<>).unwrap()),
+    "-" <num: INT> => ast::Value::Integer(-i64::from_str(num).unwrap()),
 };
 
 INT: &'input str = {
