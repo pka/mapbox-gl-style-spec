@@ -113,16 +113,7 @@ fill-color = "#00ffff"
 
     let json = r#"{"circle-radius": {"stops": [[5, 1],[10, 2]]}}"#;
     let toml = r#"[circle-radius]
-[[circle-radius.stops]]
-in = 5
-out = 1
-
-[[circle-radius.stops]]
-in = 10
-out = 2
-"#;
-    let tomlshort = r#"[circle-radius]
-    stops = [{in = 5, out = 1}, {in = 10, out = 2}]
+stops = [{ in = 5, out = 1 }, { in = 10, out = 2 }]
 "#;
 
     let tomlparsed = json::parse_json(json).unwrap();
@@ -133,30 +124,12 @@ out = 2
     let json = r#"{"circle-radius": {"property": "temperature","stops": [[{"zoom": 0, "value": 0}, 0],[{"zoom": 20, "value": 5}, 20]]}}"#;
     let toml = r#"[circle-radius]
 property = "temperature"
-
-[[circle-radius.stops]]
-out = 0
-
-[circle-radius.stops.in]
-zoom = 0
-value = 0
-
-[[circle-radius.stops]]
-out = 20
-
-[circle-radius.stops.in]
-zoom = 20
-value = 5
-"#;
-    let tomlshort = r#"[circle-radius]
-    property = "temperature"
-    stops = [{in = {value = 0, zoom = 0}, out = 0}, {in = {value = 5, zoom = 20}, out = 20}]
+stops = [{ in = { zoom = 0, value = 0 }, out = 0 }, { in = { zoom = 20, value = 5 }, out = 20 }]
 "#;
     let tomlparsed = json::parse_json(json).unwrap();
     println!("{}", tomlparsed);
     assert_eq!(format!("{}", tomlparsed), toml);
     assert!(toml::Parser::new(toml).parse().is_some());
-    //assert_eq!(tomlparsed, ast::Value::Table(toml::Parser::new(tomlshort).parse().unwrap()));
 }
 
 #[test]
@@ -208,6 +181,9 @@ text-font = ["Open Sans Bold"]
 text-field = "{name_en}"
 text-max-width = 6.25
 text-transform = "uppercase"
+
+[layers.layout.text-size]
+stops = [{ in = 1, out = 11 }, { in = 4, out = 17 }]
 "##));
 
 assert!(toml.contains(r##"

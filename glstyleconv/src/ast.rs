@@ -75,7 +75,102 @@ fn write_str(f: &mut fmt::Formatter, s: &str) -> fmt::Result {
 
 impl<'a, 'b> Printer<'a, 'b> {
     fn print(&mut self, table: &'a Table) -> fmt::Result {
+        self.print_opt(table, false)
+    }
+    fn is_inline(&mut self, pair: &'a KeyValuePair) -> bool {
+        pair.0 == "stops"
+    }
+    fn print_opt(&mut self, table: &'a Table, inline: bool) -> fmt::Result {
+        let mut inline = inline;
         let mut space_out_first = false;
+        for pair in table.iter() {
+            let (k, v) = (&pair.0, &pair.1);
+            match *v {
+                Value::Table(..) => continue,
+                Value::Array(ref a) => {
+                    if let Some(&Value::Table(..)) = a.first() {
+                        continue;
+                    }
+                }
+                _ => {}
+            }
+            space_out_first = true;
+            if !inline {
+                try!(writeln!(self.output, "{} = {}", Key(&[k]), v));
+            }
+        }
+        for (i, pair) in table.iter().enumerate() {
+            let (k, v) = (&pair.0, &pair.1);
+            // Tables or Array of Tables
+            match *v {
+                Value::Table(ref inner) => {
+                    self.stack.push(k);
+                    if inline {
+                        if i > 0 {
+                            try!(write!(self.output, ", "));
+                        }
+                        try!(write!(self.output, "{} = {{ ", k));
+                    } else {
+                        if space_out_first || i != 0 {
+                            try!(write!(self.output, "\n"));
+                        }
+                        try!(writeln!(self.output, "[{}]", Key(&self.stack)));
+                    }
+                    try!(self.print_opt(inner, inline));
+                    if inline {
+                        try!(write!(self.output, " }}"));
+                    }
+                    self.stack.pop();
+                }
+                // Array of Table
+                Value::Array(ref inner) => {
+                    match inner.first() {
+                        Some(&Value::Table(..)) => {}
+                        _ => continue
+                    }
+                    self.stack.push(k);
+                    inline = self.is_inline(pair);
+                    for (j, inner) in inner.iter().enumerate() {
+                        if inline {
+                            if j == 0 {
+                                try!(write!(self.output, "{} = [{{ ", k));
+                            } else {
+                                try!(write!(self.output, " }}, {{ "));
+                            }
+                        } else {
+                            if space_out_first || i != 0 || j != 0 {
+                                try!(write!(self.output, "\n"));
+                            }
+                            try!(writeln!(self.output, "[[{}]]", Key(&self.stack)));
+                        }
+                        match *inner {
+                            Value::Table(ref inner) => try!(self.print_opt(inner, inline)),
+                            _ => panic!("non-heterogeneous toml array"),
+                        }
+                    }
+                    if inline {
+                        try!(writeln!(self.output, " }}]"));
+                        inline = false;
+                    }
+                    self.stack.pop();
+                }
+                _ => {
+                    // Table content except nested Tables or Array of tables
+                    if inline {
+                        if i > 0 {
+                            try!(write!(self.output, ", "));
+                        }
+                        try!(write!(self.output, "{} = {}", Key(&[k]), v));
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+    #[allow(dead_code)]
+    fn print_multiline(&mut self, table: &'a Table) -> fmt::Result {
+        let mut space_out_first = false;
+        // Table content except nested Tables or Array of tables
         for pair in table.iter() {
             let (k, v) = (&pair.0, &pair.1);
             match *v {
@@ -90,6 +185,7 @@ impl<'a, 'b> Printer<'a, 'b> {
             space_out_first = true;
             try!(writeln!(self.output, "{} = {}", Key(&[k]), v));
         }
+        // Tables or Array of Tables
         for (i, pair) in table.iter().enumerate() {
             let (k, v) = (&pair.0, &pair.1);
             match *v {
