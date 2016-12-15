@@ -1486,7 +1486,7 @@
               <td>clustering</td>
               <td class='center'>&gt;= 0.14.0</td>
               <td class='center'>Not yet supported</td>
-              <td class='center'>Not yet supported</td>
+              <td class='center'>&gt;= 4.2.0</td>
             </tr>
             </tbody>
           </table>
@@ -2271,7 +2271,7 @@
   <div>
     <span class='code space-right'><a id='layout-background-visibility' href='#layout-background-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -2414,7 +2414,7 @@
   <div>
     <span class='code space-right'><a id='layout-fill-visibility' href='#layout-fill-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -2844,7 +2844,7 @@
   <div>
     <span class='code space-right'><a id='layout-line-visibility' href='#layout-line-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -3746,7 +3746,7 @@
     </span>
   </div>
   
-  <div class='space-bottom1'><p>Offset distance of icon from its anchor. Positive values indicate right and down, while negative values indicate left and up.</p>
+  <div class='space-bottom1'><p>Offset distance of icon from its anchor. Positive values indicate right and down, while negative values indicate left and up. When combined with <code>icon-rotate</code> the offset will be as if the rotated direction was up.</p>
 </div>
   
   
@@ -4488,7 +4488,7 @@
   <div>
     <span class='code space-right'><a id='layout-symbol-visibility' href='#layout-symbol-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -5032,7 +5032,7 @@
   <div>
     <span class='code space-right'><a id='layout-raster-visibility' href='#layout-raster-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -5301,7 +5301,7 @@
   <div>
     <span class='code space-right'><a id='layout-circle-visibility' href='#layout-circle-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -5583,6 +5583,98 @@
 </div>
 
             
+            <div class='col12 clearfix pad0y pad2x'>
+  <div>
+    <span class='code space-right'><a id='paint-circle-stroke-width' href='#paint-circle-stroke-width'>circle-stroke-width</a></span>
+    <span class='icon smooth-ramp inline quiet'></span>
+    
+    <span class='icon opacity inline quiet'></span>
+  </div>
+  <div>
+    <em class='inline quiet'>
+      Optional
+      <a href='#types-number'>number</a>.
+    </em>
+    
+    <span class='space-right quiet'>
+      <em>Units in</em>
+      
+        <var>pixels</var>.
+      
+    </span>
+    <span class='space-right quiet'>
+      <em>Defaults to </em> <var>0</var>.
+    </span>
+    
+  </div>
+  
+  <div class='space-bottom1'><p>The width of the circle's stroke. Strokes are placed outside of the <code>circle-radius</code>.</p>
+</div>
+  
+  
+  
+  
+</div>
+
+            
+            <div class='col12 clearfix pad0y pad2x'>
+  <div>
+    <span class='code space-right'><a id='paint-circle-stroke-color' href='#paint-circle-stroke-color'>circle-stroke-color</a></span>
+    <span class='icon smooth-ramp inline quiet'></span>
+    
+    <span class='icon opacity inline quiet'></span>
+  </div>
+  <div>
+    <em class='inline quiet'>
+      Optional
+      <a href='#types-color'>color</a>.
+    </em>
+    
+    
+    <span class='space-right quiet'>
+      <em>Defaults to </em> <var>#000000</var>.
+    </span>
+    
+  </div>
+  
+  <div class='space-bottom1'><p>The stroke color of the circle.</p>
+</div>
+  
+  
+  
+  
+</div>
+
+            
+            <div class='col12 clearfix pad0y pad2x'>
+  <div>
+    <span class='code space-right'><a id='paint-circle-stroke-opacity' href='#paint-circle-stroke-opacity'>circle-stroke-opacity</a></span>
+    <span class='icon smooth-ramp inline quiet'></span>
+    
+    <span class='icon opacity inline quiet'></span>
+  </div>
+  <div>
+    <em class='inline quiet'>
+      Optional
+      <a href='#types-number'>number</a>.
+    </em>
+    
+    
+    <span class='space-right quiet'>
+      <em>Defaults to </em> <var>1</var>.
+    </span>
+    
+  </div>
+  
+  <div class='space-bottom1'><p>The opacity of the circle's stroke.</p>
+</div>
+  
+  
+  
+  
+</div>
+
+            
           </div>
         </div>
         
@@ -5596,7 +5688,7 @@
   <div>
     <span class='code space-right'><a id='layout-fill-extrusion-visibility' href='#layout-fill-extrusion-visibility'>visibility</a></span>
     
-    <span class='icon step-ramp inline quiet'></span>
+    
     
   </div>
   <div>
@@ -5686,7 +5778,7 @@
       <em>Defaults to </em> <var>#000000</var>.
     </span>
     <span class='space-right quiet'>
-      <em>Disabled by</em> <var>fill-pattern</var>.
+      <em>Disabled by</em> <var>fill-extrusion-pattern</var>.
     </span>
   </div>
   
@@ -5860,11 +5952,11 @@
       <em>Defaults to </em> <var>0</var>.
     </span>
     <span class='space-right quiet'>
-      <em>Must be less than or equal to</em> <var>fill-extrusion-height</var>.
+      <em>Requires</em> <var>fill-extrusion-height</var>.
     </span>
   </div>
   
-  <div class='space-bottom1'><p>The height with which to extrude the base of this layer.</p>
+  <div class='space-bottom1'><p>The height with which to extrude the base of this layer. Must be less than or equal to <code>fill-extrusion-height</code>.</p>
 </div>
   
   
@@ -5968,9 +6060,9 @@
                 <dt><var>identity</var></dt>
                 <dd>functions return their input as their output.</dd>
                 <dt><var>exponential</var></dt>
-                <dd>functions generate an output by interpolating between stops just less than and just greater than the function input. This is the default for numeric domain, <span class='icon smooth-ramp quiet micro space-right indivne' title='continuous'></span> range functions.</dd>
+                <dd>functions generate an output by interpolating between stops just less than and just greater than the function input. The domain must be numeric. This is the default for numeric domain, <span class='icon smooth-ramp quiet micro space-right indivne' title='continuous'></span> range functions.</dd>
                 <dt><var>interval</var></dt>
-                <dd>functions return the output value of the stop just less than the function input. This is the default for numeric domain, <span class='icon step-ramp quiet micro space-right indivne' title='discrete'></span> range functions.</dd>
+                <dd>functions return the output value of the stop just less than the function input. The domain must be numeric. This is the default for numeric domain, <span class='icon step-ramp quiet micro space-right indivne' title='discrete'></span> range functions.</dd>
                 <dt><var>categorical</var></dt>
                 <dd>functions return the output value of the stop equal to the function input. This is the default for string domain functions.</dd>
               </dl>
