@@ -1,7 +1,7 @@
 ---
 layout: toml
 category: reference
-title: Mapbox Style Specification
+title: Mapbox Style Specification (TOML)
 permalink: /
 class: fill-light
 options: full
@@ -83,33 +83,11 @@ navigation:
 </div>
 
 <div class='limiter clearfix'>
-  <div class='pad2y'>
-    <nav class='contain z10 margin3 col9 fill-gradient space-bottom small'>
-      <div class='col3 dark round-left keyline-right pad1 center truncate'>
-        <div class='pad0y'>
-          <span class='icon gl fill-lighten0 dot inline pad0'></span> Mapbox GL
-        </div>
-      </div>
-      <div class='col9 dark tabs mobile-cols pad1'><!--
-        --><a href='https://mapbox.com/mapbox-gl-js/api' class='col3 truncate'>API</a><!--
-        --><a href='#' class='col3 truncate active'>Style Specification</a><!--
-        --><a href='https://mapbox.com/mapbox-gl-js/examples' class='col3 truncate'>Examples</a><!--
-        --><a href='https://mapbox.com/mapbox-gl-js/plugins' class='col3 truncate'>Plugins</a>
-      </div>
-    </nav>
-  </div>
 
   <div class='contain margin3 col9 pad2'>
     <div class='prose'>
       <h1>{{ page.title }}</h1>
-      <p>A Mapbox style is a document that defines the visual appearance of a map: what data to draw, the order to draw it in, and how to style the data when drawing it. A style document is a <a href="http://www.json.org/">JSON</a> object with specific root level and nested properties. This specification defines and describes these properties.</p>
-      <p>The intended audience of this specification includes:
-      <ul>
-      <li>Advanced designers and cartographers who want to write styles by hand rather than use <a href='https://www.mapbox.com/studio'>Mapbox Studio</a></li>
-      <li>Developers using style-related features of <a href='https://www.mapbox.com/mapbox-gl-js/'>Mapbox GL JS</a> or the Mapbox <a href='https://www.mapbox.com/ios-sdk/'>iOS</a> or <a href='https://www.mapbox.com/android-sdk/'>Android</a> SDKs</li>
-      <li>Authors of software that generates or processes Mapbox styles.</li>
-      </ul>
-      </p>
+      <p>A Mapbox style is a document that defines the visual appearance of a map: what data to draw, the order to draw it in, and how to style the data when drawing it. A Mapbox style document is a <a href="http://www.json.org/">JSON</a> object with specific root level and nested properties. This specification translates the <a href="https://www.mapbox.com/mapbox-gl-style-spec/">original JSON style description</a> to <a href="https://github.com/toml-lang/toml">TOML</a>.</p>
     </div>
 
     <div class='prose'>
