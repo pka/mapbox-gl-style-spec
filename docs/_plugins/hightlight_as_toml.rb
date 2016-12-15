@@ -11,8 +11,13 @@ module Jekyll
     end
 
     def render(context)
-      if @lang == 'json'
+      if @lang == 'json' || @lang = 'js'
         json = render_all(@nodelist, context)
+
+        # keep external JSON
+        if json =~ /^{\n  "poi":/
+          return super
+        end
 
         jsonpatched = if json =~ /^\b*{/
             json.clone
@@ -23,18 +28,39 @@ module Jekyll
         end
         jsonpatched.gsub!('...', '')
 
+        # add table prefix for clarity
+        ['mapbox-streets', 'wms-imagery', 'mapbox-satellite', 'geojson-marker', 'geojson-lines', 'image', 'video'].each do |source|
+          if json =~ /^"#{source}":/
+            jsonpatched = "{\"sources\": #{jsonpatched}}"
+          end
+        end
+        # Convert JS to valid JSON
+        if @lang = 'js'
+          # Remove comments
+          jsonpatched.gsub!(%r[^\s*//.*], '')
+          # Quote keys (but not https://)
+          jsonpatched.gsub!(/(\w+)+: /, %q["\1": ])
+          # Single to double quotes
+          jsonpatched.gsub!("'", '"')
+        end
+
         stdin, stdout, stderr = Open3.popen3('cd glstyleconv && cargo run -q')
         stdin.puts(jsonpatched)
         stdin.close
         toml = stdout.read
         toml << stderr.read
 
+        # Postprocess special cases
+        toml.gsub!("layers = []\n\n[sources]", "[[layers]]\n#...\n[sources]\n#...")
+        toml.gsub!(/^filter = /, '')
+        toml.gsub!("[sources]\n[sources.", '[sources.')
+
         @highlighttoml.registers.merge!(context.registers)
         out = @highlighttoml.render('toml' => toml)
 
         # Debugging output
-        @highlightjson.registers.merge!(context.registers)
-        out += @highlightjson.render('json' => json)
+        # @highlightjson.registers.merge!(context.registers)
+        # out += @highlightjson.render('json' => json)
 
         out
       else

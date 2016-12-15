@@ -75,6 +75,7 @@ fn write_str(f: &mut fmt::Formatter, s: &str) -> fmt::Result {
 
 impl<'a, 'b> Printer<'a, 'b> {
     fn print(&mut self, table: &'a Table) -> fmt::Result {
+        //TODO: pretty print inline arrays
         self.print_opt(table, false)
     }
     fn is_inline(&mut self, pair: &'a KeyValuePair) -> bool {
