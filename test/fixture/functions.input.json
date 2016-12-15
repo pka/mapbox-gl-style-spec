@@ -58,7 +58,9 @@
       "source-layer": "layer",
       "paint": {
         "line-width": {
-          "stops": ["1"]
+          "stops": [
+            "1"
+          ]
         }
       }
     },
@@ -69,7 +71,9 @@
       "source-layer": "layer",
       "paint": {
         "line-width": {
-          "stops": [[]]
+          "stops": [
+            []
+          ]
         }
       }
     },
@@ -134,11 +138,29 @@
         "fill-translate": [
           {
             "base": 1,
-            "stops": [[15, 0], [16, -2]]
+            "stops": [
+              [
+                15,
+                0
+              ],
+              [
+                16,
+                -2
+              ]
+            ]
           },
           {
             "base": 1,
-            "stops": [[15, 0], [16, -2]]
+            "stops": [
+              [
+                15,
+                0
+              ],
+              [
+                16,
+                -2
+              ]
+            ]
           }
         ]
       }
@@ -151,7 +173,22 @@
       "paint": {
         "fill-translate": {
           "base": 1,
-          "stops": [[15, [0, 0]], [16, [-2, -2]]]
+          "stops": [
+            [
+              15,
+              [
+                0,
+                0
+              ]
+            ],
+            [
+              16,
+              [
+                -2,
+                -2
+              ]
+            ]
+          ]
         }
       }
     },
@@ -162,7 +199,12 @@
       "source-layer": "layer",
       "paint": {
         "fill-antialias": {
-          "stops": [[0.5, true]]
+          "stops": [
+            [
+              0.5,
+              true
+            ]
+          ]
         }
       }
     },
@@ -172,11 +214,21 @@
       "source": "source",
       "source-layer": "layer",
       "paint": {
-        "fill-antialias": {
+        "fill-color": {
           "property": "mapbox",
           "stops": [
-              [{ "zoom": 0, "value": 1 }, true],
-              [0.5, true]]
+            [
+              {
+                "zoom": 0,
+                "value": 1
+              },
+              "#fff"
+            ],
+            [
+              0.5,
+              "#fff"
+            ]
+          ]
         }
       }
     },
@@ -186,9 +238,16 @@
       "source": "source",
       "source-layer": "layer",
       "paint": {
-        "fill-antialias": {
+        "fill-color": {
           "property": "mapbox",
-          "stops": [[{"value": "asdf"}, true]]
+          "stops": [
+            [
+              {
+                "value": "asdf"
+              },
+              "#fff"
+            ]
+          ]
         }
       }
     },
@@ -198,9 +257,16 @@
       "source": "source",
       "source-layer": "layer",
       "paint": {
-        "fill-antialias": {
+        "fill-color": {
           "property": "mapbox",
-          "stops": [[{"zoom": 1}, true]]
+          "stops": [
+            [
+              {
+                "zoom": 1
+              },
+              "#fff"
+            ]
+          ]
         }
       }
     },
@@ -210,9 +276,17 @@
       "source": "source",
       "source-layer": "layer",
       "paint": {
-        "fill-antialias": {
+        "fill-color": {
           "property": "mapbox",
-          "stops": [[{"zoom": "1", "value": "asdf"}, true]]
+          "stops": [
+            [
+              {
+                "zoom": "1",
+                "value": 0
+              },
+              "#fff"
+            ]
+          ]
         }
       }
     },
@@ -222,68 +296,453 @@
       "source": "source",
       "source-layer": "layer",
       "paint": {
-        "fill-antialias": {
+        "fill-color": {
           "property": "mapbox",
-          "stops": [[{"zoom": 1, "value": { "asdf": true }}, true]]
+          "stops": [
+            [
+              {
+                "zoom": 1,
+                "value": {
+                  "asdf": true
+                }
+              },
+              "#fff"
+            ]
+          ]
         }
       }
-  },
-  {
-    "id": "invalid object-keyed string stop for zoom function",
-    "type": "fill",
-    "source": "source",
-    "source-layer": "layer",
-    "paint": {
-      "fill-antialias": {
-        "stops": [["bad", true]]
+    },
+    {
+      "id": "invalid object-keyed string stop for zoom function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "stops": [
+            [
+              "bad",
+              "#fff"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "valid object-keyed string stop for property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "stops": [
+            [
+              "good",
+              "#fff"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid use of property function",
+      "type": "background",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "background-color": {
+          "property": "mapbox",
+          "stops": [
+            [
+              "good",
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "valid identity function",
+      "type": "background",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "background-color": {
+          "type": "identity"
+        }
+      }
+    },
+    {
+      "id": "invalid identity function with stops",
+      "type": "background",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "background-color": {
+          "type": "identity",
+          "stops": []
+        }
+      }
+    },
+    {
+      "id": "valid implicitly categorical property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "stops": [
+            [
+              "good",
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "valid implicitly categorical zoom-and-property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "stops": [
+            [
+              {"zoom": 0, "value": "good"},
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid mixed domain types for property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "categorical",
+          "stops": [
+            [
+              "good",
+              "green"
+            ],
+            [
+              1,
+              "blue"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid mixed domain types for zoom-and-property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "categorical",
+          "stops": [
+            [
+              {"zoom": 0, "value": "good"},
+              "green"
+            ],
+            [
+              {"zoom": 0, "value": 1},
+              "blue"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid domain type for exponential property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "exponential",
+          "stops": [
+            [
+              "good",
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid domain type for exponential zoom-and-property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "exponential",
+          "stops": [
+            [
+              {"zoom": 0, "value": "good"},
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid domain type for interval property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "interval",
+          "stops": [
+            [
+              "good",
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid domain type for interval zoom-and-property function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "interval",
+          "stops": [
+            [
+              {"zoom": 0, "value": "good"},
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid boolean domain type",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "categorical",
+          "stops": [
+            [
+              true,
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid array domain type",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "categorical",
+          "stops": [
+            [
+              [],
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid null domain type",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "property": "mapbox",
+          "type": "categorical",
+          "stops": [
+            [
+              null,
+              "green"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid explicit exponential function",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-antialias": {
+          "type": "exponential",
+          "stops": [
+            [
+              0,
+              true
+            ],
+            [
+              1,
+              false
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid zoom-and-property missing property",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-antialias": {
+          "stops": [
+            [
+              {
+                "zoom": 1,
+                "value": "v"
+              },
+              true
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid categorical function missing property",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-color": {
+          "type": "categorical",
+          "stops": [
+            [
+              "good",
+              "#fff"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid categorical function repeating stops",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-opacity": {
+          "type": "categorical",
+          "property": "mapbox",
+          "stops": [
+            [
+              "foo",
+              0
+            ],
+            [
+              "bar",
+              0
+            ],
+            [
+              "foo",
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid categorical function fractional stop",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-opacity": {
+          "type": "categorical",
+          "property": "mapbox",
+          "stops": [
+            [
+              0.33,
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid zoom-and-property function non-ascending stop values",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-opacity": {
+          "property": "mapbox",
+          "stops": [
+            [
+              {
+                "zoom": 0,
+                "value": 1
+              },
+              0
+            ],
+            [
+              {
+                "zoom": 0,
+                "value": 0
+              },
+              0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid zoom-and-property function non-ascending stop zooms",
+      "type": "fill",
+      "source": "source",
+      "source-layer": "layer",
+      "paint": {
+        "fill-opacity": {
+          "property": "mapbox",
+          "stops": [
+            [
+              {
+                "zoom": 1,
+                "value": 0
+              },
+              0
+            ],
+            [
+              {
+                "zoom": 0,
+                "value": 1
+              },
+              0
+            ]
+          ]
+        }
       }
     }
-  },
-  {
-    "id": "valid object-keyed string stop for property function",
-    "type": "fill",
-    "source": "source",
-    "source-layer": "layer",
-    "paint": {
-      "fill-antialias": {
-        "property": "mapbox",
-        "stops": [["good", true]]
-      }
-    }
-  },
-  {
-    "id": "invalid use of property function",
-    "type": "background",
-    "source": "source",
-    "source-layer": "layer",
-    "paint": {
-      "background-color": {
-        "property": "mapbox",
-        "stops": [["good", "green"]]
-      }
-    }
-  },
-  {
-    "id": "valid identity function",
-    "type": "background",
-    "source": "source",
-    "source-layer": "layer",
-    "paint": {
-      "background-color": {
-        "type": "identity"
-      }
-    }
-  }, {
-    "id": "invalid identity function with stops",
-    "type": "background",
-    "source": "source",
-    "source-layer": "layer",
-    "paint": {
-      "background-color": {
-        "type": "identity",
-        "stops": []
-      }
-    }
-  }
   ]
 }

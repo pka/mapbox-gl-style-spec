@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "sources": {
     "vector": {
       "type": "vector",
@@ -54,6 +54,13 @@
         "fill-opacity": {
           "stops": [[10, 0], [11, 1]],
           "foo": "bar"
+        },
+        "fill-color": {
+          "property": "mapbox",
+          "stops": [
+            [{ "zoom": 10, "value": 10 }, "purple"],
+            [{ "zoom": 11, "value": 20, "magic": "powers" }, "green"]
+          ]
         },
         "bad": true
       }
