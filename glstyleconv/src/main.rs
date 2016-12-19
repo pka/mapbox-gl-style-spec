@@ -130,6 +130,16 @@ stops = [{ in = { zoom = 0, value = 0 }, out = 0 }, { in = { zoom = 20, value = 
     println!("{}", tomlparsed);
     assert_eq!(format!("{}", tomlparsed), toml);
     assert!(toml::Parser::new(toml).parse().is_some());
+
+    let json = r#"{"fill-translate": {"stops": [ [15, [0,0] ], [16, [-2,-2]] ], "base": 1}}"#;
+    let toml = r#"[fill-translate]
+base = 1
+stops = [{ in = 15 }, { in = 16 }]
+"#; //FIXME: "out" missing!
+    let tomlparsed = json::parse_json(json).unwrap();
+    println!("{}", tomlparsed);
+    assert_eq!(format!("{}", tomlparsed), toml);
+    assert!(toml::Parser::new(toml).parse().is_some());
 }
 
 #[test]
